@@ -1,6 +1,6 @@
 .post       { width: 500px; background-color: #333; padding: 10px;
                 margin-bottom: 10px; }
-.page       { position: fixed; left: 30%; }
+.page       { width: 550px; margin: 2em auto; }
 a           { color: white; }
 h1          { font-family: 'PT Serif Caption', arial, serif; }
 input.btn   { border: 1px solid white; color: white; background: black; }
