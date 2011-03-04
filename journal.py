@@ -6,7 +6,7 @@ import os
 import time
 import datetime
 from hashlib import sha256
-from flask import Flask
+from flask import Flask, Markup
 from flask import request, session, redirect, url_for, render_template, flash
 
 app = Flask(__name__)
@@ -24,10 +24,10 @@ def get_posts():
     posts = []
     files = reversed(sorted(os.listdir("posts/")))
     for filename in files:
-        date = datetime.datetime.fromtimestamp(float(filename))
-        new_post = {'date': date.strftime("%H:%M, %A %d %B %Y")}
         with open("posts/" + filename) as f:
-            new_post['body'] = f.read()
+            body = Markup.escape((f.read())).replace("\n", Markup("<br />"))
+        date = datetime.datetime.fromtimestamp(float(filename))
+        new_post = {'date': date.strftime("%H:%M, %A %d %B %Y"), 'body': body}
         posts.append(new_post)
     return posts
 
@@ -41,10 +41,9 @@ def store_post(post):
 def index():
     """List the most recent posts, with a text box for a new post."""
     try:
-        posts = get_posts()
+        posts = get_posts()[:10]
     except (ValueError, TypeError, KeyError, OSError, IOError):
         posts = []
-    posts = get_posts()
     return render_template('index.html', posts=posts)
 
 @app.route('/post', methods=['POST'])
