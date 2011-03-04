@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block body %}
+    <h2>New Post</h2>
+    {% if error %}
+    <p class="error"><strong>Error:</strong> {{ error }}</p>
+    {% endif %}
+    <form action="{{ url_for('post') }}" method="post">
+        <textarea rows="10" cols="60">
+        </textarea><br />
+        <input type="submit" value="Post" />
+    </form>
+    <h2>Recent Posts</h2>
+    {% for post in posts %}
+    <div class="post">
+        <h3>{{ post.date }}</h3>
+        <p>{{ post.body }}</p>
+    </div>
+    {% else %}
+    <strong>No posts found.</strong>
+    {% endfor %}
+{% endblock %}

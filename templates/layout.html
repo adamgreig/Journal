@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+    <head>
+        <title>A Journal</title>
+        <link rel="stylesheet" type="text/css"
+            href="{{ url_for('static', filename='style.css') }}" />
+    </head>
+    <body>
+        <div class="page">
+            <h1>A Journal</h1>
+            {% for message in get_flashed_messages() %}
+            <div class="flash">{{ message }}</div>
+            {% endfor %}
+            {% block body %}
+            {% endblock %}
+            {% if session.logged_in %}
+            <a href="{{ url_for('logout') }} ">log out</a>
+            {% endif %}
+        </div>
+    </body>
+</html>
