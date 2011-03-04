@@ -46,6 +46,15 @@ def index():
         posts = []
     return render_template('index.html', posts=posts)
 
+@app.route('/all')
+def all():
+    """View all posts."""
+    try:
+        posts = get_posts()
+    except (ValueError, TypeError, KeyError, OSError, IOError):
+        posts = []
+    return render_template('index.html', posts=posts)
+
 @app.route('/post', methods=['POST'])
 def post():
     """Stores a new post."""
