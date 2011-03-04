@@ -5,8 +5,7 @@
     <p class="error"><strong>Error:</strong> {{ error }}</p>
     {% endif %}
     <form action="{{ url_for('post') }}" method="post">
-        <textarea rows="10" cols="60">
-        </textarea><br />
+        <textarea rows="10" cols="60" name="post_body"></textarea><br />
         <input type="submit" value="Post" />
     </form>
     <h2>Recent Posts</h2>
@@ -16,6 +15,6 @@
         <p>{{ post.body }}</p>
     </div>
     {% else %}
-    <strong>No posts found.</strong>
+    <p><strong>No posts found.</strong></p>
     {% endfor %}
 {% endblock %}
