@@ -2,4 +2,7 @@
                 margin-bottom: 10px; }
 .page       { position: fixed; left: 30%; }
 a           { color: white; }
-body        { background-color: black; color: white; }
+h1          { font-family: 'PT Serif Caption', arial, serif; }
+input.btn   { border: 1px solid white; color: white; background: black; }
+body        { background-color: black; color: white;
+                font-family: 'PT Serif', serif; }

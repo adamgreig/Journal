@@ -40,6 +40,8 @@ def store_post(post):
 @app.route('/')
 def index():
     """List the most recent posts, with a text box for a new post."""
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
     try:
         posts = get_posts()[:10]
     except (ValueError, TypeError, KeyError, OSError, IOError):
@@ -49,6 +51,8 @@ def index():
 @app.route('/all')
 def all():
     """View all posts."""
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
     try:
         posts = get_posts()
     except (ValueError, TypeError, KeyError, OSError, IOError):
@@ -58,6 +62,8 @@ def all():
 @app.route('/post', methods=['POST'])
 def post():
     """Stores a new post."""
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
     store_post(request.form['post_body'])
     flash("Post added.")
     return redirect(url_for("index"))
@@ -82,16 +88,6 @@ def logout():
     session.pop('logged_in', None)
     flash("Logged out successfully.")
     return redirect(url_for('login'))
-
-@app.before_request
-def before_request():
-    """
-    Before any request, check that the user is logged in. If they are not,
-    redirect them to the login page instead.
-    Special exception: don't stop them from logging in.
-    """
-    if not session.get('logged_in') and request.path != "/login":
-        return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run()

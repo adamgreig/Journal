@@ -4,6 +4,10 @@
         <title>A Journal</title>
         <link rel="stylesheet" type="text/css"
             href="{{ url_for('static', filename='style.css') }}" />
+        <link rel="stylesheet" type="text/css"
+            href="http://fonts.googleapis.com/css?family=PT+Serif+Caption" />
+        <link rel="stylesheet" type="text/css"
+            href="http://fonts.googleapis.com/css?family=PT+Serif" />
     </head>
     <body>
         <div class="page">
@@ -11,8 +15,8 @@
             {% for message in get_flashed_messages() %}
             <div class="flash">{{ message }}</div>
             {% endfor %}
-            {% block body %}
-            {% endblock %}
+{% block body %}
+{% endblock %}
             {% if session.logged_in %}
             <a href="{{ url_for('logout') }} ">log out</a>
             {% endif %}
