@@ -1,5 +1,4 @@
 *.pyc
 *.swp
-password.py
 config.py
 entries/
