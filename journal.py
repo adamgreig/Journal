@@ -10,16 +10,17 @@ from flask import Flask, Markup
 from flask import request, session, redirect, url_for, render_template, flash
 
 app = Flask(__name__)
-app.config.from_object('password')
 app.config.from_object('config')
 
+# These views will require password authentication
+protected_views = ['/', '/all', '/new', '/logout']
+
 def make_entries_dir_if_not_exists():
-    """Makes the entries/ directory if it doesn't exist."""
     if "entries" not in os.listdir("."):
         os.mkdir("./entries")
 
-def get_entries():
-    """Returns a list of entry dicts from the entriess/ folder."""
+def get_entries(limit=None):
+    """Returns a list of entries {date, body} from the entries/ folder."""
     make_entries_dir_if_not_exists()
     entries = []
     files = reversed(sorted(os.listdir("entries/")))
@@ -29,6 +30,8 @@ def get_entries():
         date = datetime.datetime.fromtimestamp(float(filename))
         new_entry = {'date': date.strftime("%H:%M, %A %d %B %Y"), 'body': body}
         entries.append(new_entry)
+        if limit and len(entries) >= limit:
+            return entries
     return entries
 
 def store_entry(entry):
@@ -37,36 +40,34 @@ def store_entry(entry):
     with open("entries/" + str(int(time.time())), "w") as f:
         f.write(entry)
 
+def show_entries(count=None):
+    """Render the main page with up to *count* entries."""
+    try:
+        entries = get_entries(count)
+    except (ValueError, TypeError, KeyError, OSError, IOError):
+        return render_template('index.html',
+            error="There was an error reading the journal.")
+    else:
+        return render_template('index.html', entries=entries)
+
 @app.route('/')
 def index():
-    """List the most recent entries, with a text box for a new entry."""
-    if not session.get('logged_in'):
-        return redirect(url_for('login'))
-    try:
-        entries = get_entries()[:10]
-    except (ValueError, TypeError, KeyError, OSError, IOError):
-        entries = []
-    return render_template('index.html', entries=entries)
+    return show_entries(10)
 
 @app.route('/all')
 def all():
-    """View all entries."""
-    if not session.get('logged_in'):
-        return redirect(url_for('login'))
-    try:
-        entries = get_entries()
-    except (ValueError, TypeError, KeyError, OSError, IOError):
-        entries = []
-    return render_template('index.html', entries=entries)
+    return show_entries()
 
 @app.route('/new', methods=['POST'])
 def new():
-    """Stores a new entry."""
-    if not session.get('logged_in'):
-        return redirect(url_for('login'))
-    store_entry(request.form['entry'])
-    flash("Entry added.")
-    return redirect(url_for("index"))
+    try:
+        store_entry(request.form['entry'])
+    except (ValueError, TypeError, OSError, IOError):
+        flash("Error adding entry.")
+    else:
+        flash("Entry added.")
+    finally:
+        return redirect(url_for("index"))
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -84,10 +85,14 @@ def login():
 
 @app.route('/logout')
 def logout():
-    """Log the user out."""
     session.pop('logged_in', None)
     flash("Logged out successfully.")
     return redirect(url_for('login'))
+
+@app.before_request
+def check_auth():
+    if request.path in protected_views and not session.get('logged_in'):
+        return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run()
