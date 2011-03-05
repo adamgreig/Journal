@@ -13,59 +13,59 @@ app = Flask(__name__)
 app.config.from_object('password')
 app.config.from_object('config')
 
-def make_posts_dir_if_not_exists():
-    """Makes the posts/ directory if it doesn't exist."""
-    if "posts" not in os.listdir("."):
-        os.mkdir("./posts")
+def make_entries_dir_if_not_exists():
+    """Makes the entries/ directory if it doesn't exist."""
+    if "entries" not in os.listdir("."):
+        os.mkdir("./entries")
 
-def get_posts():
-    """Returns a list of post dicts from the posts/ folder."""
-    make_posts_dir_if_not_exists()
-    posts = []
-    files = reversed(sorted(os.listdir("posts/")))
+def get_entries():
+    """Returns a list of entry dicts from the entriess/ folder."""
+    make_entries_dir_if_not_exists()
+    entries = []
+    files = reversed(sorted(os.listdir("entries/")))
     for filename in files:
-        with open("posts/" + filename) as f:
+        with open("entries/" + filename) as f:
             body = Markup.escape((f.read())).replace("\n", Markup("<br />"))
         date = datetime.datetime.fromtimestamp(float(filename))
-        new_post = {'date': date.strftime("%H:%M, %A %d %B %Y"), 'body': body}
-        posts.append(new_post)
-    return posts
+        new_entry = {'date': date.strftime("%H:%M, %A %d %B %Y"), 'body': body}
+        entries.append(new_entry)
+    return entries
 
-def store_post(post):
-    """Saves post text to a datestamped file."""
-    make_posts_dir_if_not_exists()
-    with open("posts/" + str(int(time.time())), "w") as f:
-        f.write(post)
+def store_entry(entry):
+    """Saves entry text to a datestamped file."""
+    make_entries_dir_if_not_exists()
+    with open("entries/" + str(int(time.time())), "w") as f:
+        f.write(entry)
 
 @app.route('/')
 def index():
-    """List the most recent posts, with a text box for a new post."""
+    """List the most recent entries, with a text box for a new entry."""
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     try:
-        posts = get_posts()[:10]
+        entries = get_entries()[:10]
     except (ValueError, TypeError, KeyError, OSError, IOError):
-        posts = []
-    return render_template('index.html', posts=posts)
+        entries = []
+    return render_template('index.html', entries=entries)
 
 @app.route('/all')
 def all():
-    """View all posts."""
+    """View all entries."""
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     try:
-        posts = get_posts()
+        entries = get_entries()
     except (ValueError, TypeError, KeyError, OSError, IOError):
-        posts = []
-    return render_template('index.html', posts=posts)
+        entries = []
+    return render_template('index.html', entries=entries)
 
-@app.route('/post', methods=['POST'])
-def post():
-    """Stores a new post."""
+@app.route('/new', methods=['POST'])
+def new():
+    """Stores a new entry."""
     if not session.get('logged_in'):
         return redirect(url_for('login'))
-    store_post(request.form['post_body'])
-    flash("Post added.")
+    store_entry(request.form['entry'])
+    flash("Entry added.")
     return redirect(url_for("index"))
 
 @app.route('/login', methods=['POST', 'GET'])

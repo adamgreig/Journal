@@ -2,4 +2,4 @@
 *.swp
 password.py
 config.py
-posts/
+entries/
