@@ -31,7 +31,7 @@ def get_entries(limit=None):
         new_entry = {'date': date.strftime("%H:%M, %A %d %B %Y"), 'body': body}
         entries.append(new_entry)
         if limit and len(entries) >= limit:
-            return entries
+            break
     return entries
 
 def store_entry(entry):
