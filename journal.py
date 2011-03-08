@@ -77,6 +77,7 @@ def login():
         password = sha256(request.form['password']).hexdigest()
         if password == app.config['PASSWORD']:
             session['logged_in'] = True
+            session['login_time'] = int(time.time())
             flash("Logged in successfully.")
             return redirect(url_for('index'))
         else:
@@ -86,6 +87,7 @@ def login():
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
+    session.pop('login_time', None)
     flash("Logged out successfully.")
     return redirect(url_for('login'))
 
@@ -93,6 +95,11 @@ def logout():
 def check_auth():
     if request.path in protected_views and not session.get('logged_in'):
         return redirect(url_for('login'))
+    if session.get('login_time'):
+        delta = int(time.time()) - session.get('login_time')
+        if delta > app.config['TIMEOUT']:
+            return redirect(url_for('login'))
+    session['login_time'] = int(time.time())
 
 if __name__ == '__main__':
     app.run()
