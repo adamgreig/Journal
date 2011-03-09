@@ -100,6 +100,8 @@ def check_auth():
     if session.get('login_time'):
         delta = int(time.time()) - session.get('login_time')
         if delta > app.config['TIMEOUT']:
+            session['logged_in'] = None
+            session['login_time'] = None
             return redirect(url_for('login'))
     session['login_time'] = int(time.time())
 
