@@ -93,7 +93,9 @@ def logout():
 
 @app.before_request
 def check_auth():
-    if request.path in protected_views and not session.get('logged_in'):
+    if request.path not in protected_views:
+        return
+    if not session.get('logged_in'):
         return redirect(url_for('login'))
     if session.get('login_time'):
         delta = int(time.time()) - session.get('login_time')
