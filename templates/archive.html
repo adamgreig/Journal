@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block head %}
+<script src="/static/archive.js"></script>
+{% endblock %}
+{% block menu %}
+    <a href="{{ url_for('index') }}">home</a><br />
+{% endblock %}
+{% block body %}
+<header>
+    <h2>Archive</h2>
+</header>
+{% if years %}
+    <section id="archive" class="accordion">
+        {% for year in years %}
+            <h3>{{ year }}</h3>
+            <section class="accordion">
+                {% for month in months[year] %}
+                    <h4>{{ month }}</h4>
+                    <section class="articles">
+                        {% for entry in entries[month] %}
+                            <article class="entry">
+                                <h5>{{ entry.date }}</h5>
+                                <p>{{ entry.body }}</p>
+                            </article>
+                        {% endfor %}
+                    </section>
+                {% endfor %}
+            </section>
+        {% endfor %}
+    </section>
+{% else %}
+    <p><strong>No entries found.</strong></p>
+{% endif %}
+{% endblock %}

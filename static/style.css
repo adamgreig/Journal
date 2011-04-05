@@ -1,6 +1,17 @@
 .entry      { width: 500px; background-color: #333; padding: 10px;
                 margin-bottom: 10px; }
 .page       { width: 550px; margin: 2em auto; }
+.accordion
+    h3      { padding: 5px; outline: none; text-decoration: underline;
+                background-color: #111; }
+.accordion
+    h4      { padding: 5px; outline: none; text-decoration: underline;
+                background-color: #222; margin-left: 10px; }
+.accordion
+    article { margin-left: 20px; height: auto; margin-bottom: 5px; }
+nav         { float: left; width: 80px; background-color: #333;
+                border: 1px solid white; padding: 10px; margin: 1em auto;
+                position: fixed; }
 a           { color: white; }
 h1          { font-family: 'PT Serif Caption', arial, serif; }
 input.btn   { border: 1px solid white; color: white; background: black; }

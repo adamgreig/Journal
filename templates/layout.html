@@ -8,18 +8,32 @@
             href="http://fonts.googleapis.com/css?family=PT+Serif+Caption" />
         <link rel="stylesheet" type="text/css"
             href="http://fonts.googleapis.com/css?family=PT+Serif" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.11/jquery-ui.min.js"></script>
+        {% block head %}
+        {% endblock %}
     </head>
     <body>
-        <div class="page">
-            <h1>A Journal</h1>
-            {% for message in get_flashed_messages() %}
-            <div class="flash">{{ message }}</div>
-            {% endfor %}
-{% block body %}
-{% endblock %}
+        <nav>
+            {% block menu %}
+            {% endblock %}
             {% if session.logged_in %}
-            <a href="{{ url_for('logout') }} ">log out</a>
+                <a href="{{ url_for('logout') }} ">log out</a>
+            {% else %}
+                <a href="{{ url_for('login') }} ">log in</a>
             {% endif %}
-        </div>
+        </nav>
+        <section class="page">
+            <header>
+                <h1>A Journal</h1>
+                {% for message in get_flashed_messages() %}
+                <div class="flash">{{ message }}</div>
+                {% endfor %}
+            </header>
+            <section class="body">
+                {% block body %}
+                {% endblock %}
+            </section>
+        </section>
     </body>
 </html>

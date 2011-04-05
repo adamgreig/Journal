@@ -12,8 +12,10 @@ from flask import request, session, redirect, url_for, render_template, flash
 app = Flask(__name__)
 app.config.from_object('config')
 
-# These views will require password authentication
-protected_views = ['/', '/all', '/new', '/logout']
+# These views will not require password authentication
+safe_views = [
+    '/login', '/static/style.css', '/favicon.ico', '/static/archive.js'
+]
 
 def make_entries_dir_if_not_exists():
     if "entries" not in os.listdir("."):
@@ -29,6 +31,8 @@ def get_entries(limit=None):
             body = Markup.escape((f.read())).replace("\n", Markup("<br />"))
         date = datetime.datetime.fromtimestamp(float(filename))
         new_entry = {'date': date.strftime("%H:%M, %A %d %B %Y"), 'body': body}
+        new_entry['year'] = date.year
+        new_entry['month'] = date.strftime("%B %Y")
         entries.append(new_entry)
         if limit and len(entries) >= limit:
             break
@@ -40,23 +44,40 @@ def store_entry(entry):
     with open("entries/" + str(int(time.time())), "w") as f:
         f.write(entry)
 
-def show_entries(count=None):
+@app.route('/')
+def index():
     """Render the main page with up to *count* entries."""
     try:
-        entries = get_entries(count)
+        entries = get_entries(10)
     except (ValueError, TypeError, KeyError, OSError, IOError):
         return render_template('index.html',
             error="There was an error reading the journal.")
     else:
-        return render_template('index.html', entries=entries)
+        return render_template("index.html", entries=entries)
 
-@app.route('/')
-def index():
-    return show_entries(10)
-
-@app.route('/all')
-def all():
-    return show_entries()
+@app.route('/archive')
+def archive():
+    """Render the archive page, with an accordion for years and months."""
+    try:
+        years = []
+        months = {}
+        entries_by_month = {}
+        entries = reversed(get_entries())
+        for entry in entries:
+            if entry['year'] not in years:
+                years.append(entry['year'])
+                months[entry['year']] = []
+            if entry['month'] not in months[entry['year']]:
+                months[entry['year']].append(entry['month'])
+                entries_by_month[entry['month']] = []
+            entries_by_month[entry['month']].append(entry)
+            print repr(entries_by_month)
+    except (ValueError, TypeError, KeyError, OSError, IOError):
+        return render_template('index.html',
+            error="There was an error reading the journal.")
+    else:
+        return render_template("archive.html", years=years, months=months,
+            entries=entries_by_month)
 
 @app.route('/new', methods=['POST'])
 def new():
@@ -93,7 +114,8 @@ def logout():
 
 @app.before_request
 def check_auth():
-    if request.path not in protected_views:
+    print request.path
+    if request.path in safe_views:
         return
     if not session.get('logged_in'):
         return redirect(url_for('login'))

@@ -1,23 +1,31 @@
 {% extends "layout.html" %}
+{% block menu %}
+    <a href="{{ url_for('archive') }}">archive</a><br />
+{% endblock %}
 {% block body %}
-    <h2>New Entry</h2>
-    {% if error %}
-    <p class="error"><strong>Error:</strong> {{ error }}</p>
-    {% endif %}
-    <form action="{{ url_for('new') }}" method="post">
-        <textarea rows="10" cols="60" name="entry"></textarea><br />
-        <input type="submit" value="Add" class="btn" />
-    </form>
+    <section class="new">
+        <h2>New Entry</h2>
+        {% if error %}
+        <p class="error"><strong>Error:</strong> {{ error }}</p>
+        {% endif %}
+        <form action="{{ url_for('new') }}" method="post">
+            <textarea rows="10" cols="60" name="entry"></textarea><br />
+            <input type="submit" value="Add" class="btn" />
+        </form>
+    </section>
     <hr />
-    <h2>Recent Entries</h2>
-    {% for entry in entries %}
-    <div class="entry">
-        <h3>{{ entry.date }}</h3>
-        <p>{{ entry.body }}</p>
-    </div>
-    {% else %}
-    <p><strong>No entries found.</strong></p>
-    {% endfor %}
+    <section class="recent">
+        <header>
+            <h2>Recent Entries</h2>
+        </header>
+        {% for entry in entries %}
+        <article class="entry">
+            <h3>{{ entry.date }}</h3>
+            <p>{{ entry.body }}</p>
+        </article>
+        {% else %}
+        <p><strong>No entries found.</strong></p>
+        {% endfor %}
+    </section>
     <hr />
-    <a href="{{ url_for('all') }}">view all entries</a><br />
 {% endblock %}
