@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block head %}
-<script src="/static/archive.js"></script>
+<script src="{{ url_for('static', filename='archive.js') }}"></script>
 {% endblock %}
 {% block menu %}
     <a href="{{ url_for('index') }}">home</a><br />
